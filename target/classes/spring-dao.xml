@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--1.引入druid配置文件-->
+    <context:property-placeholder location="classpath:database.properties"/>
+
+    <!--2.druid连接池-->
+    <bean name="druidDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="${druid.url}" />
+        <property name="driverClassName" value="${druid.driverClassName}" />
+        <property name="username" value="${druid.username}" />
+        <property name="password" value="${druid.password}" />
+        <property name="initialSize" value="${druid.initialSize}"/>
+        <property name="maxActive" value="${druid.maxActive}" />
+        <property name="minIdle" value="${druid.minIdle}" />
+        <property name="maxWait" value="${druid.maxWait}" />
+        <property name="poolPreparedStatements" value="${druid.poolPreparedStatements}" />
+        <property name="maxOpenPreparedStatements" value="${druid.maxOpenPreparedStatements}" />
+    </bean>
+
+    <!--3.sqlSessionFactory-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="druidDataSource"/>
+        <!--绑定mybatis配置文件-->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+    </bean>
+
+    <!--配置Dao接口扫描包,动态的实现了Dao接口可以注入到Spring容器中! -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--注入sqlSessionFactory-->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <!--要扫描的dao包-->
+        <property name="basePackage" value="com.yuan.dao"/>
+    </bean>
+</beans>
